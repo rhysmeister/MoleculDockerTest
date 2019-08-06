@@ -7,7 +7,11 @@ testinfra_hosts = testinfra.utils.ansible_runner.AnsibleRunner(
 
 
 def test_default_nginx_file(host):
-    f = host.file('/usr/share/nginx/html/index.html')
+
+    if host.file('/etc/redhat-release').exists:
+        f = host.file('/usr/share/nginx/html/index.html')
+    else:
+        f = host.file('/var/www/html/index.nginx-debian.html')
 
     assert f.exists
     assert f.user == 'root'
@@ -28,6 +32,7 @@ def test_nginx_running_and_enabled(host):
 def test_nginx_listening(host):
     h = host.socket("tcp://0.0.0.0:80")
     assert h.is_listening
+
 
 def test_nginx_default_page(host):
     cmd = host.run('curl -s http://localhost | grep "Hello from"')
