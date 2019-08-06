@@ -1,0 +1,50 @@
+---
+# tasks file for nginx
+- name: Ensure epel is available
+  yum:
+    name: epel-release
+  when: ansible_os_family == "RedHat"
+
+- name: Install nginx
+  package:
+    name: nginx
+
+- name: Ensure nginx is running
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+# nginx stuff pinched from https://github.com/geerlingguy/ansible-role-nginx/
+
+- name: Include OS-specific variables.
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Install utilities
+  package:
+    name: "{{ item }}"
+  with_items:
+    - net-tools
+    - curl
+
+- name: Define nginx_user.
+  set_fact:
+    nginx_user: "{{ __nginx_user }}"
+  when: nginx_user is not defined
+
+- name: Set default page location
+  set_fact:
+    nginx_default_page: "{{ (ansible_os_family == 'Debian') | ternary('/var/www/html/index.nginx-debian.html', '/usr/share/nginx/html/index.html') }}"
+
+- name: Ensure default page set
+  copy:
+    content: |
+      <html>
+        <head>
+          <title>{{ ansible_hostname }}</title>
+          <body>
+            Hello from {{ ansible_hostname }}!
+          </body>
+        </head>
+      </html>
+    dest: "{{ nginx_default_page }}"

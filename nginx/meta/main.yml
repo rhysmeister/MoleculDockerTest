@@ -1,0 +1,7 @@
+---
+galaxy_info:
+  author: Rhys Campbell
+  description: A Simple nginx role to test out docker with molecule
+  license: NA
+  min_ansible_version: 1.2
+  platforms: Various
