@@ -29,6 +29,7 @@ def test_nginx_running_and_enabled(host):
     assert nginx.is_running
     assert nginx.is_enabled
 
+
 def test_nginx_listening(host):
     h = host.socket("tcp://0.0.0.0:80")
     assert h.is_listening
